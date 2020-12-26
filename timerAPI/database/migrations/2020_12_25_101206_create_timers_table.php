@@ -15,7 +15,7 @@ class CreateTimersTable extends Migration
     {
         Schema::create('timers', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('unique_code');
+            $table->string('unique_code');
         });
     }
 

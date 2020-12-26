@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Http\Controllers;
-ini_set('memory_limit', '1024M');
 use App\Timer;
 use Illuminate\Http\Request;
 
@@ -11,25 +10,21 @@ class TimerController extends Controller
     public function create(Request $request)
     {
         $timer = $request->input();
-        //settype($timer, "integer");
-        //Timer::create($timer);     
-        //Timer::insert($timer);
-        //Timer::insert($timer);
-         $a=array();
-         for($i=0;$i<$timer['unique_code'];$i++){
-             $a['unique_code'] = $timer['unique_code'];
-             $a[] = new  Ingredient([
-                'name' => $ingredient_names[$i],
-                'other_field' => $ingredient_other_field[$i],
-                'other_field2' => $ingredient_other_field2[$i],
-            ]);
-         }
-        // $data = array(
-        //     array('unique_code'=>'123'),
-        //     array('unique_code'=>'123')
-        // );
-        Timer::insert($a);
-        return response()->json($timer['unique_code'], 201);
+          $a=array();
+          for($i=0;$i<$timer['unique_code'];$i++)
+          {
+             $str = '1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZabcefghijklmnopqrstuvwxyz';
+            // $a['unique_code'] = substr(str_shuffle($str), 0, 7);
+            // Timer::insert($a);
+            array_push($a,array('unique_code'=> substr(str_shuffle($str), 0, 7)));
+          }
+          foreach (array_chunk($a,50000) as $t)  
+            {
+                //DB::table('table_name')->insert($t); 
+                Timer::insert($t);
+            }
+          //Timer::insert($a);
+        return response()->json('DONE QUERY', 201);
         //return response()->json($timer);
         //return var_dump($timer);
        //return $timer;

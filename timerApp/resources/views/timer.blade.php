@@ -13,11 +13,11 @@ div {
 <body>
 <form id="loginform" method="post">
 <input type="number" name="unique_code" id="uniqueID" value="" />
-<button type="submit" class="refresher" onClick="myTimer = setInterval(incTimer, 1000)">Refresh Div</button>
+<button type="submit" class="refresher" onClick="myTimer = setInterval(incTimer, 10)">ENTER NUMBER</button>
 </form>
 <div class="card-body" id="timer">TIMER</div>
 <div id="div-to-refresh">
-<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. </p>
+<p>STATUS</p>
 </div>
 
 <script type="text/javascript">
@@ -29,7 +29,8 @@ $(document).ready(function() {
             url: 'http://localhost:8070/api/timers/',
             data: $(this).serialize(),
             success: function(response)
-            {
+            {   
+                clearInterval(myTimer);   // stop TIMER
                 $('#div-to-refresh').html(response);
            }
        });
@@ -40,14 +41,17 @@ function incTimer() {
 
 var currentMinutes = Math.floor(totalSecs / 60);
 var currentSeconds = totalSecs % 60;
+var currentMilliSeconds = totalMilliSecs;
+
 if(currentSeconds <= 9) currentSeconds = "0" + currentSeconds;
 if(currentMinutes <= 9) currentMinutes = "0" + currentMinutes;
-totalSecs++;
-$("#timer").text(currentMinutes + ":" + currentSeconds);
+if(totalMilliSecs == 100){totalSecs++;totalMilliSecs = 0;}
+totalMilliSecs++;
+$("#timer").text(currentMinutes + ":" + currentSeconds + ":" + currentMilliSeconds);
 }
 
-totalSecs = 1;
-
+totalSecs = 0;
+totalMilliSecs = 1;
 $(document).ready(function() {
 $("#start").click(function() {
     incTimer();
