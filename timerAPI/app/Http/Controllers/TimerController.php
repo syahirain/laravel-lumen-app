@@ -11,31 +11,19 @@ class TimerController extends Controller
     public function create(Request $request)
     {
         $timer = $request->input();
-          $a=array();
+         
           $count=$leftover=0;
-          for($i=0;$i<$timer['unique_code'];$i++)
-          {
-            $str = '1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZabcefghijklmnopqrstuvwxyz';
-          //  $str = '123';
-            array_push($a,array('unique_code'=> substr(str_shuffle($str), 0, 7)));
-          }
-
+          $getCode = new GenerateCode($timer['unique_code']);
 
           while($count < $timer['unique_code'])
           {
             if($count > 0)
             {
-              $leftover = $timer['unique_code'] - $count; // get leftover unique code needed to do
-              $a=array(); // clear out old array
+              $leftover = $timer['unique_code'] - $count; // get leftover unique code needed to do           
+              $getCode = new GenerateCode($leftover);
             }
 
-            for($i=0;$i<$leftover;$i++)
-            {
-              $str = '1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZabcefghijklmnopqrstuvwxyz';
-              array_push($a,array('unique_code'=> substr(str_shuffle($str), 0, 7)));
-            }
-
-            foreach (array_chunk($a,10000) as $t)  
+            foreach (array_chunk($getCode->unique_code,10000) as $t)  
               {
                   try {
                       // Validate the value..
@@ -54,9 +42,20 @@ class TimerController extends Controller
           }
           
         return response()->json($count);
-        //return response()->json($timer);
-        //return var_dump($timer);
-       //return $timer;
     }
 
+}
+
+class GenerateCode {
+  
+  public $unique_code = array();
+
+  function __construct($iteration) {
+    for($i=0;$i<$iteration;$i++)
+    {
+      $str = '1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZabcefghijklmnopqrstuvwxyz';
+      array_push($this->unique_code,array('unique_code'=> substr(str_shuffle($str), 0, 7)));
+    }
+    return $this->unique_code;
+  }
 }
